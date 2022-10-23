@@ -24,11 +24,23 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello VNAJ API'});
 });
 
+app.get("/api/:date", function (req, res){
+  console.log("Received date: ", req.params.date)
+  let parsedDate = new Date(req.params.date);
+  console.log("Parsed date: ", parsedDate)
+
+    // 👇️ timestamp in milliseconds
+  const timestampInMs = parsedDate.getTime();
+
+  res.json({"unix":timestampInMs,"utc": parsedDate.toUTCString()})
+});
+
 
 
 // listen for requests :)
-var listener = app.listen(process.env.PORT, function () {
+//process.env.PORT
+var listener = app.listen(3000, function () {
   console.log('Your app is listening on port ' + listener.address().port);
 });
 
-//http://localhost:55202/
+//http://localhost:3000/
