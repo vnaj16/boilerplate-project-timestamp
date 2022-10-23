@@ -24,32 +24,43 @@ app.get("/api/hello", function (req, res) {
   res.json({ greeting: 'hello VNAJ API' });
 });
 
+Date.prototype.isValid = function () {
+              
+  // If the date object is invalid it
+  // will return 'NaN' on getTime() 
+  // and NaN is never equal to itself.
+  return this.getTime() === this.getTime();
+};
+
+app.get("/api", function (req, res){
+  let parsedDate = new Date();
+  const timestampInMs = parsedDate.getTime();
+  res.json({ "unix": timestampInMs, "utc": parsedDate.toUTCString() })
+})
+
 app.get("/api/:date", function (req, res) {
-  if (req.params.date) {
     console.log("Received date: ", req.params.date)
     let parsedDate = new Date(req.params.date);
     console.log("Parsed date: ", parsedDate)
+    console.log(typeof parsedDate)
+    
 
-    if (parsedDate === "Invalid Date") {
-      parsedDate = new Date(parseInt(req.params.date))
-      if (parsedDate === "Invalid Date") {
-        res.json({ error: "Invalid Date" })
-      }
-      res.json({ "unix": req.params.date, "utc": parsedDate.toUTCString() })
-    }
-    else {
+    if (parsedDate.isValid()) {
       // 👇️ timestamp in milliseconds
       const timestampInMs = parsedDate.getTime();
-
       res.json({ "unix": timestampInMs, "utc": parsedDate.toUTCString() })
     }
-  }
-  else {
-    let parsedDate = new Date();
-    const timestampInMs = parsedDate.getTime();
-    res.json({ "unix": timestampInMs, "utc": parsedDate.toUTCString() })
-  }
-
+    else {
+      parsedDate = new Date(parseInt(req.params.date))
+      const timestampInMs = parsedDate.getTime();
+      if (parsedDate.isValid()) {
+        res.json({ "unix": timestampInMs, "utc": parsedDate.toUTCString() })
+      }
+      else{
+        res.json({ error: "Invalid Date" })
+      }
+      
+    }
 });
 
 
